@@ -8,7 +8,6 @@ Viso is a modern web application built with [Next.js](https://nextjs.org), lever
 - **Drizzle ORM**: Simplified database interactions.
 - **TailwindCSS**: Utility-first CSS framework for rapid UI development.
 - **TypeScript**: Static typing for better code quality.
-- **YouTube Integration**: Powered by `youtubei.js`.
 - **AI SDK**: Google AI SDK for advanced AI capabilities.
 
 ## Getting Started
@@ -24,7 +23,7 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/viso.git
+   git clone https://github.com/gubbysbyte/Viso---Video-URL-to-Social-Media-Caption.git
    ```
 
 2. Navigate to the project directory:
