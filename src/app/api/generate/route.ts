@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server"; // Import Auth
 // Use relative paths to be safe
 import { getVideoTranscript } from "../../../lib/youtube";
 import { generateSocialContent } from "../../../lib/gemini";
@@ -7,6 +8,12 @@ import { generatedContent } from "../../../db/schema";
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. Check Authentication
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { url } = body;
 
@@ -35,6 +42,7 @@ export async function POST(req: NextRequest) {
       originalUrl: url,
       videoTitle: transcriptData.title || "Unknown Video",
       content: aiContent,
+      userId: userId, // 👈 Linking the data to the user
     }).returning();
 
     return NextResponse.json({ success: true, data: record });

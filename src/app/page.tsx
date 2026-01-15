@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, ArrowRight, Loader2, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Twitter, Linkedin, Instagram, LogOut } from "lucide-react";
+import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 
 export default function Home() {
+  const { user } = useUser(); // Get the current user info
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -23,11 +25,7 @@ export default function Home() {
       });
 
       const data = await res.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Something went wrong");
-      }
-
+      if (!data.success) throw new Error(data.error || "Something went wrong");
       setResult(data.data);
     } catch (err: any) {
       setError(err.message);
@@ -37,12 +35,27 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-200 p-8 flex flex-col items-center">
-      {/* 1. Hero Section */}
+    <main className="min-h-screen bg-neutral-950 text-neutral-200 p-8 flex flex-col items-center relative">
+      
+      {/* 🔴 Top Right: User Profile Button */}
+      <div className="absolute top-4 right-4">
+        <SignedIn>
+          <UserButton showName />
+        </SignedIn>
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="text-sm font-medium text-blue-400 hover:text-blue-300">
+              Sign In
+            </button>
+          </SignInButton>
+        </SignedOut>
+      </div>
+
+      {/* Hero Section */}
       <div className="max-w-2xl w-full text-center mt-10 space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
           <Sparkles className="w-4 h-4" />
-          <span>AI Content Engine</span>
+          <span>Viso | AI Content Engine</span>
         </div>
         <h1 className="text-5xl font-bold tracking-tight text-white">
           Turn Video into <span className="text-blue-500">Viral Content</span>
@@ -53,7 +66,7 @@ export default function Home() {
         </p>
       </div>
 
-      {/* 2. Input Form */}
+      {/* Input Form */}
       <form onSubmit={handleSubmit} className="w-full max-w-xl mt-12 space-y-4">
         <div className="flex gap-2">
           <input
@@ -64,22 +77,33 @@ export default function Home() {
             required
             className="flex-1 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-neutral-600"
           />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                Generate <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+          
+          {/* 🔴 CONDITIONAL BUTTON RENDERING */}
+          <SignedIn>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+              ) : (
+                <>Generate <ArrowRight className="w-5 h-5" /></>
+              )}
+            </button>
+          </SignedIn>
+
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button
+                type="button"
+                className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-3 rounded-lg font-medium transition-colors whitespace-nowrap"
+              >
+                Sign in to Generate
+              </button>
+            </SignInButton>
+          </SignedOut>
+
         </div>
         {error && (
           <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -88,47 +112,37 @@ export default function Home() {
         )}
       </form>
 
-      {/* 3. Results Display */}
+      {/* Results Display (Same as before) */}
       {result && (
         <div className="w-full max-w-4xl mt-16 grid gap-8 md:grid-cols-3">
-          
-          {/* Twitter Card */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-blue-500/50 transition-colors">
-            <div className="flex items-center gap-2 mb-4 text-blue-400">
-              <Twitter className="w-5 h-5" />
-              <h3 className="font-semibold text-white">Twitter Thread</h3>
+           {/* ... (Keep your Twitter/LinkedIn/Insta cards here) ... */}
+           {/* If you need the card code again, let me know! */}
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+               <div className="flex items-center gap-2 mb-4 text-blue-400">
+                  <Twitter className="w-5 h-5" />
+                  <h3 className="font-semibold text-white">Twitter Thread</h3>
+               </div>
+               <div className="space-y-4 text-sm text-neutral-300">
+                  {result.content.twitter.map((tweet: string, i: number) => (
+                  <div key={i} className="p-3 bg-neutral-950 rounded border border-neutral-800">{tweet}</div>
+                  ))}
+               </div>
             </div>
-            <div className="space-y-4 text-sm text-neutral-300">
-              {result.content.twitter.map((tweet: string, i: number) => (
-                <div key={i} className="p-3 bg-neutral-950 rounded border border-neutral-800">
-                  {tweet}
+            {/* LinkedIn & Insta cards... */}
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                <div className="flex items-center gap-2 mb-4 text-blue-600">
+                  <Linkedin className="w-5 h-5" />
+                  <h3 className="font-semibold text-white">LinkedIn Post</h3>
                 </div>
-              ))}
+                <div className="p-3 bg-neutral-950 rounded border border-neutral-800 text-sm text-neutral-300 whitespace-pre-wrap">{result.content.linkedin}</div>
             </div>
-          </div>
-
-          {/* LinkedIn Card */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-blue-500/50 transition-colors">
-            <div className="flex items-center gap-2 mb-4 text-blue-600">
-              <Linkedin className="w-5 h-5" />
-              <h3 className="font-semibold text-white">LinkedIn Post</h3>
+             <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                <div className="flex items-center gap-2 mb-4 text-pink-500">
+                  <Instagram className="w-5 h-5" />
+                  <h3 className="font-semibold text-white">Instagram Caption</h3>
+                </div>
+                <div className="p-3 bg-neutral-950 rounded border border-neutral-800 text-sm text-neutral-300 whitespace-pre-wrap">{result.content.instagram}</div>
             </div>
-            <div className="p-3 bg-neutral-950 rounded border border-neutral-800 text-sm text-neutral-300 whitespace-pre-wrap">
-              {result.content.linkedin}
-            </div>
-          </div>
-
-          {/* Instagram Card */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-pink-500/50 transition-colors">
-            <div className="flex items-center gap-2 mb-4 text-pink-500">
-              <Instagram className="w-5 h-5" />
-              <h3 className="font-semibold text-white">Instagram Caption</h3>
-            </div>
-            <div className="p-3 bg-neutral-950 rounded border border-neutral-800 text-sm text-neutral-300 whitespace-pre-wrap">
-              {result.content.instagram}
-            </div>
-          </div>
-
         </div>
       )}
     </main>
