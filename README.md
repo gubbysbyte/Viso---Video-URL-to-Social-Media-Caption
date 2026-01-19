@@ -1,98 +1,137 @@
-# Viso
+# Viso | AI Content Engine
 
-Viso is a modern web application built with [Next.js](https://nextjs.org), leveraging powerful tools like Drizzle ORM, TailwindCSS, and TypeScript to deliver a robust and scalable solution.
+Viso is a powerful AI-driven tool designed to repurpose video content in seconds. Simply paste a YouTube link, and Viso extracts insights to generate ready-to-post content for Twitter, LinkedIn, and Instagram.
 
-## Features
+## 🚀 Features
 
-- **Next.js**: Server-side rendering and static site generation.
-- **Drizzle ORM**: Simplified database interactions.
-- **TailwindCSS**: Utility-first CSS framework for rapid UI development.
-- **TypeScript**: Static typing for better code quality.
-- **AI SDK**: Google AI SDK for advanced AI capabilities.
+- **Video to Content**: Transform YouTube videos into engaging social media posts.
+- **Multi-Platform Support**:
+  - 🧵 **Twitter Threads**: Broken down into engaging tweets.
+  - 💼 **LinkedIn Posts**: Professional and insightful summaries.
+  - 📸 **Instagram Captions**: Catchy captions optimized for engagement.
+- **AI-Powered**: Utilizes advanced AI models to analyze and generate content.
+- **Secure Authentication**: Integrated with Clerk for seamless user sign-in and management.
+- **Real-time Status**: Polling mechanism to handle long-running AI generation tasks.
 
-## Getting Started
+## 🔑 Environment Variables
+
+To configure the project, copy the `.env.example` file to `.env.local` and update the values as needed:
+
+```bash
+cp .env.example .env.local
+```
+
+The `.env.example` file includes placeholders for the required environment variables:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_example
+CLERK_SECRET_KEY=sk_test_example
+GEMINI_API_KEY=your_gemini_api_key_here
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
+ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
+DATABASE_URL=your_database_url_here
+RAPID_API_KEY=your_rapid_api_key_here
+```
+
+### Setting Up Environment Variables
+
+1. **Clerk Authentication Keys**:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Obtain from your Clerk dashboard.
+   - `CLERK_SECRET_KEY`: Obtain from your Clerk dashboard.
+
+2. **AI Provider Keys**:
+   - `GEMINI_API_KEY`: Sign up for Gemini AI and generate an API key.
+   - `GOOGLE_GENERATIVE_AI_API_KEY`: Obtain from Google Cloud Console.
+   - `ASSEMBLYAI_API_KEY`: Sign up for AssemblyAI and generate an API key.
+
+3. **Database URL**:
+   - `DATABASE_URL`: Use your PostgreSQL database connection string.
+
+4. **Rapid API Key**:
+   - `RAPID_API_KEY`: Obtain from RapidAPI.
+
+## 📦 Getting Started
+
+Follow these steps to set up the project locally.
 
 ### Prerequisites
 
-Ensure you have the following installed:
-
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 18+ installed
+- npm, yarn, or pnpm
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/gubbysbyte/Viso---Video-URL-to-Social-Media-Caption.git
-   ```
+1. **Clone the repository**
 
-2. Navigate to the project directory:
    ```bash
+   git clone https://github.com/yourusername/viso.git
    cd viso
    ```
 
-3. Install dependencies:
+2. **Install dependencies**
+
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-### Development
+3. **Set up Environment Variables**
 
-Start the development server:
-```bash
-npm run dev
-# or
-yarn dev
-```
+   Copy the `.env.example` file to `.env.local` and update the values as described above.
 
-Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
+   ```bash
+   cp .env.example .env.local
+   ```
 
-### Build
+4. **Run the development server**
 
-To create a production build:
-```bash
-npm run build
-# or
-yarn build
-```
+   ```bash
+   npm run dev
+   ```
 
-### Start
+   Open http://localhost:3000 with your browser to see the result.
 
-Run the production build:
-```bash
-npm run start
-# or
-yarn start
-```
-
-## Environment Variables
-
-Create a `.env.local` file in the root directory and configure the following variables:
-```
-DATABASE_URL=your_database_url
-API_KEY=your_api_key
-```
-
-## Project Structure
+## 📂 Full Project Structure
 
 ```
 viso/
+├── drizzle.config.ts
+├── eslint.config.mjs
+├── list-models.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── test-ai.ts
+├── test-api.ts
+├── test-script.ts
+├── tsconfig.json
+├── .env.example
+├── public/
 ├── src/
-│   ├── app/          # Next.js app directory
-│   ├── db/           # Database schema and configuration
-│   ├── lib/          # Utility libraries
-├── public/           # Static assets
-├── package.json      # Project metadata and dependencies
-├── tsconfig.json     # TypeScript configuration
-├── next.config.ts    # Next.js configuration
+│   ├── proxy.ts
+│   ├── app/
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── README.md
+│   │   └── api/
+│   │       ├── check-status/
+│   │       │   └── route.ts
+│   │       └── generate/
+│   │           └── route.ts
+│   ├── db/
+│   │   ├── index.ts
+│   │   └── schema.ts
+│   └── lib/
+│       ├── gemini.ts
+│       └── youtube.ts
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License.
