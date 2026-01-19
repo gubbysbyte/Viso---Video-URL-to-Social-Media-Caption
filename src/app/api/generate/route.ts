@@ -1,57 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server"; // Import Auth
-// Use relative paths to be safe
-import { getVideoTranscript } from "../../../lib/youtube";
+import { fetchYoutubeTranscript } from "../../../lib/youtube";
 import { generateSocialContent } from "../../../lib/gemini";
 import { db } from "../../../db";
 import { generatedContent } from "../../../db/schema";
+import { auth } from "@clerk/nextjs/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const url = searchParams.get("url"); // We use the URL as the identifier
+
+  if (!url) return NextResponse.json({ error: "URL required" }, { status: 400 });
+
   try {
-    // 1. Check Authentication
     const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // 1. Fetch from YouTube via RapidAPI
+    console.log("🚀 Step 1: Getting Transcript...");
+    const youtubeData = await fetchYoutubeTranscript(url);
+    
+    if (!youtubeData.success || !youtubeData.text) {
+      return NextResponse.json({ status: "processing" }); // Keep polling if it fails once
     }
 
-    const body = await req.json();
-    const { url } = body;
-
-    if (!url) {
-      return NextResponse.json({ error: "URL is required" }, { status: 400 });
-    }
-
-    // 1. Get Transcript
-    console.log("🔍 Extracting transcript...");
-    const transcriptData = await getVideoTranscript(url);
-
-    if (!transcriptData.success || !transcriptData.transcript) {
-      return NextResponse.json(
-        { error: transcriptData.error || "Failed to process video" }, 
-        { status: 400 }
-      );
-    }
-
-    // 2. Generate Content
-    console.log("🧠 Generating AI content...");
-    const aiContent = await generateSocialContent(transcriptData.transcript);
+    // 2. Pass immediately to Gemini
+    console.log("✅ Step 2: Transcript ready. Calling Gemini...");
+    const aiContent = await generateSocialContent(youtubeData.text);
 
     // 3. Save to DB
-    console.log("💾 Saving to DB...");
+    console.log("💾 Step 3: Saving to DB...");
     const [record] = await db.insert(generatedContent).values({
       originalUrl: url,
-      videoTitle: transcriptData.title || "Unknown Video",
+      videoTitle: "AI Generated Content",
       content: aiContent,
-      userId: userId, // 👈 Linking the data to the user
+      userId: userId || "guest",
     }).returning();
 
-    return NextResponse.json({ success: true, data: record });
+    // 4. Send the FINAL result back! This stops the polling.
+    return NextResponse.json({ 
+      status: "completed", 
+      data: record 
+    });
 
   } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" }, 
-      { status: 500 }
-    );
+    console.error("Funnel Error:", error);
+    return NextResponse.json({ status: "error", error: "Generation failed" });
   }
 }

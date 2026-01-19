@@ -13,6 +13,7 @@
     "@ai-sdk/google": "^3.0.7",
     "@clerk/nextjs": "^6.36.7",
     "ai": "^6.0.33",
+    "assemblyai": "^4.22.1",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.562.0",
@@ -20,6 +21,7 @@
     "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "youtube-dl-exec": "^3.0.29",
     "youtubei.js": "^16.0.1",
     "zod": "^4.3.5"
   },
