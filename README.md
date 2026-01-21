@@ -26,9 +26,7 @@ The `.env.example` file includes placeholders for the required environment varia
 ```env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_example
 CLERK_SECRET_KEY=sk_test_example
-GEMINI_API_KEY=your_gemini_api_key_here
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
-ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
 DATABASE_URL=your_database_url_here
 RAPID_API_KEY=your_rapid_api_key_here
 ```
@@ -40,9 +38,7 @@ RAPID_API_KEY=your_rapid_api_key_here
    - `CLERK_SECRET_KEY`: Obtain from your Clerk dashboard.
 
 2. **AI Provider Keys**:
-   - `GEMINI_API_KEY`: Sign up for Gemini AI and generate an API key.
    - `GOOGLE_GENERATIVE_AI_API_KEY`: Obtain from Google Cloud Console.
-   - `ASSEMBLYAI_API_KEY`: Sign up for AssemblyAI and generate an API key.
 
 3. **Database URL**:
    - `DATABASE_URL`: Use your PostgreSQL database connection string.
@@ -94,20 +90,6 @@ Follow these steps to set up the project locally.
 
 ```
 viso/
-├── drizzle.config.ts
-├── eslint.config.mjs
-├── list-models.ts
-├── next-env.d.ts
-├── next.config.ts
-├── package.json
-├── postcss.config.mjs
-├── README.md
-├── test-ai.ts
-├── test-api.ts
-├── test-script.ts
-├── tsconfig.json
-├── .env.example
-├── public/
 ├── src/
 │   ├── proxy.ts
 │   ├── app/
