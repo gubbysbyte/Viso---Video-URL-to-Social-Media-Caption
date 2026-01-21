@@ -1,25 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Sparkles,
-  ArrowRight,
-  Loader2,
-  Twitter,
-  Linkedin,
-  Instagram,
-  LogOut,
-} from "lucide-react";
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { Sparkles, ArrowRight, Loader2, Twitter, Linkedin, Instagram } from "lucide-react";
+import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs"; // Removed UserButton and useUser
 
 export default function Home() {
-  const { user } = useUser(); // Get the current user info
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -74,21 +59,7 @@ async function handleSubmit(e: React.FormEvent) {
 }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-200 p-8 flex flex-col items-center relative">
-      {/* 🔴 Top Right: User Profile Button */}
-      <div className="absolute top-4 right-4">
-        <SignedIn>
-          <UserButton showName />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="text-sm font-medium text-blue-400 hover:text-blue-300">
-              Sign In
-            </button>
-          </SignInButton>
-        </SignedOut>
-      </div>
-
+    <main className="flex-grow text-neutral-200 p-8 flex flex-col items-center relative">
       {/* Hero Section */}
       <div className="max-w-2xl w-full text-center mt-10 space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">

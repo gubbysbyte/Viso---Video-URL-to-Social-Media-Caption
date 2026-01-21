@@ -1,0 +1,42 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Viso API",
+    "version": "1.0.0",
+    "description": "API for converting YouTube URLs to viral social media content using Gemini AI."
+  },
+  "paths": {
+    "/api/generate": {
+      "post": {
+        "summary": "Initiate generation",
+        "description": "Validates the URL and creates a processing ticket in the database.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "url": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Job initiated successfully." },
+          "401": { "description": "Unauthorized (Clerk Session Missing)." }
+        }
+      }
+    },
+    "/api/check-status": {
+      "get": {
+        "summary": "Check job status and trigger work",
+        "parameters": [
+          { "name": "url", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Returns processing, completed, or error status." }
+        }
+      }
+    }
+  }
+}

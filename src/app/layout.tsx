@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs';
+import Footer from "@/components/Footer";
+import Header from "@/components/Header"; // Import the new Header component
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,9 +20,11 @@ export default function RootLayout({
   return (
     // Wrap everything here 👇
     <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className} suppressHydrationWarning>
+      <html lang="en" className="bg-neutral-950">
+        <body className={`${inter.className} flex flex-col min-h-screen`}>
+          <Header /> {/* Render the Header component */}
           {children}
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

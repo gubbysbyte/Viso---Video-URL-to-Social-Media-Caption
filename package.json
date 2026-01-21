@@ -21,6 +21,7 @@
     "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "swagger-ui-react": "^5.31.0",
     "youtube-dl-exec": "^3.0.29",
     "youtubei.js": "^16.0.1",
     "zod": "^4.3.5"
@@ -30,6 +31,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
     "babel-plugin-react-compiler": "1.0.0",
     "drizzle-kit": "^0.31.8",
     "eslint": "^9",
