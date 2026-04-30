@@ -1,69 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sparkles, ArrowRight, Loader2, Twitter, Linkedin, Instagram } from "lucide-react";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs"; // Removed UserButton and useUser
+import { SignInButton, useAuth } from "@clerk/nextjs"; // Removed UserButton, SignedIn, SignedOut
 
 export default function Home() {
+  const { userId } = useAuth();
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
 
+  // Clear state when user signs out
+  useEffect(() => {
+    if (!userId) {
+      setResult(null);
+      setUrl("");
+      setError("");
+    }
+  }, [userId]);
+
   // Inside src/app/page.tsx -> handleSubmit function
 
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  
-  // Reset state before starting
-  setIsLoading(true);
-  setError("");
-  setResult(null);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-  // We start polling immediately. The first check will trigger the logic.
-  const pollInterval = setInterval(async () => {
-    try {
-      const response = await fetch(`/api/check-status?url=${encodeURIComponent(url)}`);
-      
-      if (!response.ok) {
-        // Handle unauthorized or server crashes
-        clearInterval(pollInterval);
+    // Reset state before starting
+    setIsLoading(true);
+    setError("");
+    setResult(null);
+
+    // Use recursive sequential polling to prevent concurrent requests
+    // that would instantly exhaust the Gemini free-tier quota.
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/check-status?url=${encodeURIComponent(url)}`);
+
+        if (!response.ok) {
+          // Handle unauthorized or server crashes
+          setIsLoading(false);
+          setError("Session expired or server error.");
+          return;
+        }
+
+        const statusData = await response.json();
+
+        if (statusData.status === "completed") {
+          // 🟢 DOTS CONNECTED: Show the data
+          setResult(statusData.data);
+          setIsLoading(false);
+          console.log("✅ Generation successful.");
+        } else if (statusData.status === "error") {
+          // 🔴 FAILSAFE: Gemini or API fails
+          setError(statusData.error || "An error occurred.");
+          setIsLoading(false);
+        } else {
+          // Still processing... wait 5 seconds AFTER this request finishes
+          console.log("⏳ AI is working...");
+          setTimeout(poll, 5000);
+        }
+      } catch (err) {
         setIsLoading(false);
-        setError("Session expired or server error.");
-        return;
+        setError("Network error. Please check your connection.");
       }
+    };
 
-      const statusData = await response.json();
-
-      if (statusData.status === "completed") {
-        // 🟢 DOTS CONNECTED: Stop the loop and show the data
-        clearInterval(pollInterval);
-        setResult(statusData.data);
-        setIsLoading(false);
-        console.log("✅ Generation successful.");
-      } else if (statusData.status === "error") {
-        // 🔴 FAILSAFE: Stop the loop if Gemini or RapidAPI fails
-        clearInterval(pollInterval);
-        setError(statusData.error || "An error occurred.");
-        setIsLoading(false);
-      } else {
-        // Still processing... just wait for the next 5-second tick
-        console.log("⏳ AI is working...");
-      }
-    } catch (err) {
-      clearInterval(pollInterval);
-      setIsLoading(false);
-      setError("Network error. Please check your connection.");
-    }
-  }, 5000); // 5 seconds is optimal for Gemini free-tier rate limits
-}
+    poll();
+  }
 
   return (
     <main className="flex-grow text-neutral-200 p-8 flex flex-col items-center relative">
       {/* Hero Section */}
       <div className="max-w-2xl w-full text-center mt-10 space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
-          <Sparkles className="w-4 h-4" />
+          {/* <Sparkles className="w-4 h-4" /> */}
           <span>Viso | AI Content Engine</span>
         </div>
         <h1 className="text-5xl font-bold tracking-tight text-white">
@@ -88,7 +98,7 @@ async function handleSubmit(e: React.FormEvent) {
           />
 
           {/* 🔴 CONDITIONAL BUTTON RENDERING */}
-          <SignedIn>
+          {userId ? (
             <button
               type="submit"
               disabled={isLoading}
@@ -104,9 +114,7 @@ async function handleSubmit(e: React.FormEvent) {
                 </>
               )}
             </button>
-          </SignedIn>
-
-          <SignedOut>
+          ) : (
             <SignInButton mode="modal">
               <button
                 type="button"
@@ -115,7 +123,7 @@ async function handleSubmit(e: React.FormEvent) {
                 Sign in to Generate
               </button>
             </SignInButton>
-          </SignedOut>
+          )}
         </div>
         {error && (
           <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">

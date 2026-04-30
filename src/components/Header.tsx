@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { Cpu, Sparkles } from 'lucide-react';
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignInButton, UserButton } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
-export default function Header() {
+export default async function Header() {
+  const { userId } = await auth();
   return (
     <header className="bg-neutral-950 border-b border-neutral-800 py-4 px-6 flex justify-between items-center">
       {/* Branding */}
@@ -21,16 +23,15 @@ export default function Header() {
 
       {/* User Authentication */}
       <div className="flex items-center gap-4">
-        <SignedIn>
+        {userId ? (
           <UserButton showName />
-        </SignedIn>
-        <SignedOut>
+        ) : (
           <SignInButton mode="modal">
             <button className="text-sm font-medium text-blue-400 hover:text-blue-300">
               Sign In
             </button>
           </SignInButton>
-        </SignedOut>
+        )}
       </div>
     </header>
   );
