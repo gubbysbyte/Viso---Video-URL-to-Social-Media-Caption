@@ -15,7 +15,7 @@ export const generatedContent = pgTable('generated_content', {
   originalUrl: text('original_url').notNull(),
   videoTitle: text('video_title'),
   // We store the structured AI output (Twitter/LinkedIn/Insta) as a JSON object
-  content: jsonb('content').notNull(), 
-  userId: text('user_id').notNull(),
+  content: jsonb('content').notNull(),
+  userId: uuid('user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
